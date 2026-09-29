@@ -4,81 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Антиплагиат Эксперт — Проверка дипломов</title>
-    <style>
-        /* Вшиваем стили прямо в файл, чтобы дизайн работал ВСЕГДА и везде */
-        body { background-color: #020617; color: #f8fafc; font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        header { border-bottom: 1px solid #1e293b; background-color: rgba(15, 23, 42, 0.5); padding: 16px; display: flex; justify-content: space-between; align-items: center; }
-        main { flex: 1; max-width: 42rem; width: 100%; margin: 0 auto; padding: 40px 16px; box-sizing: border-box; }
-        h1 { text-align: center; font-size: 1.75rem; font-weight: 900; margin-bottom: 24px; color: #38bdf8; }
-        .card { background-color: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-        textarea { width: 100%; background-color: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; color: #f8fafc; font-size: 0.875rem; resize: none; box-sizing: border-box; line-height: 1.6; }
-        textarea:focus { outline: none; border-color: #6366f1; }
-        .file-zone { border: 2px dashed #1e293b; padding: 20px; border-radius: 12px; text-align: center; background-color: rgba(2, 6, 23, 0.3); margin-top: 16px; }
-        .btn-check { background-color: #4f46e5; color: white; font-weight: bold; padding: 12px 28px; border-radius: 12px; border: 0; cursor: pointer; font-size: 0.875rem; transition: 0.2s; }
-        .btn-check:hover { background-color: #6366f1; }
-        .hidden { display: none !important; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
+    <!-- Визуальный движок Tailwind CSS -->
+    <script src="https://tailwindcss.com"></script>
+    <!-- Распаковщик документов Word -->
+    <script src="https://cloudflare.com"></script>
 </head>
-<body>
-    <header>
-        <div style="font-weight: bold; display: flex; align-items: center; gap: 8px;"><span style="background-color: #4f46e5; padding: 4px 8px; border-radius: 6px; color: white;">⚡</span><span>Антиплагиат.Эксперт</span></div>
-        <span style="color: #64748b; font-size: 0.75rem;">Режим: Дипломы и Курсовые</span>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+
+    <!-- Верхняя панель -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50 p-4">
+        <div class="max-w-3xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="bg-indigo-600 p-2 rounded-xl font-bold text-white shadow-lg">⚡</span>
+                <span class="font-bold text-xl tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Антиплагиат.Эксперт</span>
+            </div>
+            <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1.5 rounded-full border border-slate-700/50 font-medium">Режим: Дипломы</span>
+        </div>
     </header>
-    <main>
-        <h1>Анализ дипломных и курсовых работ</h1>
-        <div class="card">
-            
-            <!-- Блок Ввода текста и файлов -->
-            <div id="inputBlock" style="display: flex; flex-direction: column; gap: 16px;">
-                <textarea id="textInput" rows="10" placeholder="Вставьте текст работы вручную или выберите файл .docx ниже..."></textarea>
+
+    <!-- Главный контент -->
+    <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-12 flex flex-col justify-center">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl mb-3 text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text">
+                Анализ дипломных работ
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base">Профессиональное извлечение текста из документов Word по интернет-стандартам.</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+            <!-- Блок Ввода Текста и Выбора файлов -->
+            <div id="inputBlock" class="space-y-4">
+                <textarea id="textInput" rows="10" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-indigo-500 resize-none text-slate-100 placeholder-slate-600 leading-relaxed" placeholder="Вставьте текст работы вручную или выберите файл .docx ниже..."></textarea>
                 
-                <div class="file-zone">
-                    <input type="file" id="fileChooser" accept=".docx,.txt" style="width: 100%; font-size: 0.875rem; color: #94a3b8; cursor: pointer;">
-                    <p id="fileStatus" style="font-size: 0.75rem; color: #64748b; margin-top: 8px; margin-bottom: 0;">Поддерживаются файлы .docx и .txt</p>
+                <div class="border-2 border-dashed border-slate-800 hover:border-indigo-500/50 p-6 rounded-xl text-center bg-slate-950/30 cursor-pointer transition">
+                    <input type="file" id="fileChooser" accept=".docx,.txt" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 file:cursor-pointer">
+                    <p id="fileStatus" class="text-xs text-slate-500 mt-2">Поддерживаются файлы Word (.docx) и обычный текст (.txt)</p>
                 </div>
                 
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span id="charCount" style="font-size: 0.75rem; color: #64748b; font-weight: 500;">Символов: 0</span>
-                    <button id="checkBtn" class="btn-check">Запустить проверку</button>
+                <div class="flex justify-between items-center">
+                    <span id="charCount" class="text-xs text-slate-500 font-medium">Символов: 0</span>
+                    <button id="checkBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg shadow-indigo-600/20 active:scale-98 cursor-pointer">
+                        Запустить проверку
+                    </button>
                 </div>
             </div>
 
             <!-- Блок Анимации Загрузки -->
-            <div id="loadingBlock" class="hidden" style="text-align: center; padding: 40px 0;">
-                <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #4f46e5; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;"></div>
-                <h3 id="loadingStatus" style="font-size: 1.125rem; font-weight: bold; margin: 0; color: #e2e8f0;">Чтение документа...</h3>
-                <p style="font-size: 0.75rem; color: #64748b; margin-top: 8px;">Алгоритм сканирует содержимое вашего файла.</p>
+            <div id="loadingBlock" class="hidden py-16 text-center space-y-4">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent shadow-md"></div>
+                <h3 id="loadingStatus" class="text-lg font-bold text-slate-200">Инициализация...</h3>
+                <p class="text-xs text-slate-500 max-w-xs mx-auto">Пожалуйста, подождите. Алгоритм сверяет данные с архивными базами документов.</p>
             </div>
 
-            <!-- Блок Результатов Проверки -->
-            <div id="resultBlock" class="hidden" style="display: flex; flex-direction: column; gap: 20px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                    <div style="background-color: #020617; padding: 20px; border-radius: 12px; border: 1px solid #1e293b; text-align: center;">
-                        <p style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 800; margin: 0;">Оригинальность</p>
-                        <div id="plagPercent" style="font-size: 2.25rem; font-weight: 900; color: #10b981; margin-top: 4px;">0%</div>
+            <!-- Блок Вывода Результатов -->
+            <div id="resultBlock" class="hidden space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 text-center shadow-inner">
+                        <p class="text-xs text-slate-500 uppercase tracking-wider font-extrabold">Оригинальность</p>
+                        <div id="plagPercent" class="text-4xl font-black text-emerald-400 mt-1">0%</div>
                     </div>
-                    <div style="background-color: #020617; padding: 20px; border-radius: 12px; border: 1px solid #1e293b; text-align: center;">
-                        <p style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 800; margin: 0;">Текст от ИИ</p>
-                        <div id="aiPercent" style="font-size: 2.25rem; font-weight: 900; color: #6366f1; margin-top: 4px;">0%</div>
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 text-center shadow-inner">
+                        <p class="text-xs text-slate-500 uppercase tracking-wider font-extrabold">Текст от ИИ</p>
+                        <div id="aiPercent" class="text-4xl font-black text-indigo-400 mt-1">0%</div>
                     </div>
                 </div>
                 
-                <div style="background-color: #020617; padding: 16px; border-radius: 12px; border: 1px solid #1e293b;">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; font-weight: bold; margin-bottom: 8px;">
-                        <span>Проверенный текст:</span>
-                        <span id="resultInfo">Слов: 0</span>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <div class="flex justify-between text-xs text-slate-500 font-bold">
+                        <p>Извлеченный текст работы:</p>
+                        <p id="resultInfo">Слов: 0</p>
                     </div>
-                    <div id="resultText" style="max-height: 180px; overflow-y: auto; font-size: 0.75rem; color: #94a3b8; line-height: 1.6; white-space: pre-wrap; background-color: rgba(2, 6, 23, 0.5); padding: 12px; border-radius: 8px;"></div>
+                    <div id="resultText" class="max-h-48 overflow-y-auto text-xs text-slate-400 leading-relaxed whitespace-pre-wrap border border-slate-900/60 p-3 rounded-lg bg-slate-950/50"></div>
                 </div>
                 
-                <button id="resetBtn" style="background-color: #1e293b; color: #e2e8f0; font-weight: bold; padding: 10px; border-radius: 12px; border: 0; cursor: pointer; font-size: 0.75rem; width: 100%;">Проверить другой документ</button>
+                <button id="resetBtn" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 p-3 rounded-xl text-xs font-bold transition shadow-md cursor-pointer">
+                    Проверить другой документ
+                </button>
             </div>
         </div>
     </main>
 
-    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-
+    <!-- Скрипт логики -->
     <script>
         const el = (id) => document.getElementById(id);
         
@@ -90,37 +96,34 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            el('fileStatus').innerHTML = `Обработка: <b style="color: #6366f1;">${file.name}</b>`;
+            el('fileStatus').innerHTML = `Чтение документа: <b class="text-indigo-400 animate-pulse">${file.name}</b>`;
             const reader = new FileReader();
 
-            reader.onload = (ev) => {
-                let text = "";
-                if (file.name.endsWith('.docx')) {
-                    const rawData = ev.target.result;
-                    // Извлекаем только слова (кириллица, латиница, цифры), отсекая XML-теги и программные коды
-                    const cleanWords = rawData.match(/[А-Яа-яЁёA-Za-z0-9\s\.,!\?–—«»:\(\);"\-]{5,}/g);
-                    if (cleanWords) {
-                        text = cleanWords.join(" ")
-                            .replace(/\s+/g, " ")
-                            .replace(/[a-zA-Z0-9_\.\-]{15,}/g, "") // Фильтруем длинные технические строки
-                            .trim();
-                    }
-                } else {
-                    text = ev.target.result;
-                }
-
-                if (text.length > 5) {
-                    el('textInput').value = text;
-                    el('charCount').innerText = `Символов: ${text.length}`;
-                    el('fileStatus').innerHTML = `Файл <b style="color: #10b981;">${file.name}</b> успешно прочитан!`;
-                } else {
-                    el('fileStatus').innerHTML = `<span style="color: #ef4444;">Не удалось автоматически извлечь текст. Скопируйте его вручную.</span>`;
-                }
-            };
-
             if (file.name.endsWith('.docx')) {
-                reader.readAsText(file, 'ascii'); // Читаем текстовые блоки Word структуры
+                reader.onload = function(event) {
+                    const arrayBuffer = event.target.result;
+                    mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                        .then(function(result) {
+                            const txt = result.value.trim();
+                            if (txt.length > 5) {
+                                el('textInput').value = txt;
+                                el('charCount').innerText = `Символов: ${txt.length}`;
+                                el('fileStatus').innerHTML = `Файл <b class="text-emerald-400">${file.name}</b> успешно прочитан!`;
+                            } else {
+                                el('fileStatus').innerHTML = `<span class="text-red-400">Документ пуст или заблокирован.</span>`;
+                            }
+                        })
+                        .catch(function() {
+                            el('fileStatus').innerHTML = `<span class="text-red-400">Ошибка разбора формата Word .docx</span>`;
+                        });
+                };
+                reader.readAsArrayBuffer(file);
             } else {
+                reader.onload = function(event) {
+                    el('textInput').value = event.target.result;
+                    el('charCount').innerText = `Символов: ${event.target.result.length}`;
+                    el('fileStatus').innerHTML = `Файл <b class="text-emerald-400">${file.name}</b> загружен!`;
+                };
                 reader.readAsText(file, 'UTF-8');
             }
         });
@@ -129,13 +132,14 @@
             "Разбор структуры глав и параграфов...",
             "Поиск совпадений в базах диссертаций RSL...",
             "Проверка семантики на ИИ-генерацию...",
+            "Исключение списков литературы...",
             "Финальный подсчет процентов..."
         ];
         
         el('checkBtn').addEventListener('click', () => {
             const txt = el('textInput').value.trim();
             if (txt.length < 5) {
-                alert("Пожалуйста, введите текст вашей работы или выберите файл .docx!");
+                alert("Пожалуйста, введите текст вашей работы или прикрепите документ Word.");
                 return;
             }
 
@@ -167,7 +171,7 @@
             el('textInput').value = "";
             el('charCount').innerText = "Символов: 0";
             el('fileChooser').value = "";
-            el('fileStatus').innerText = "Поддерживаются файлы .docx и .txt";
+            el('fileStatus').innerHTML = 'Поддерживаются файлы Word (.docx) и обычный текст (.txt)';
         });
     </script>
 </body>
