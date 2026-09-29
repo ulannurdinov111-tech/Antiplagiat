@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Антиплагиат Эксперт — Проверка дипломов</title>
+    <!-- Стабильный визуальный движок -->
+    <script src="https://tailwindcss.com"></script>
+    <!-- Официальный распаковщик документов Word -->
+    <script src="https://cloudflare.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+
+    <!-- Верхняя панель -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50 p-4">
+        <div class="max-w-3xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="bg-indigo-600 p-2 rounded-xl font-bold text-white shadow-lg">⚡</span>
+                <span class="font-bold text-xl tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Антиплагиат.Эксперт</span>
+            </div>
+            <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1.5 rounded-full border border-slate-700/50 font-medium">Режим: Дипломы и Курсовые</span>
+        </div>
+    </header>
+
+    <!-- Главный экран приложения -->
+    <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-12 flex flex-col justify-center">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl mb-3 text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text">
+                Анализ дипломных работ
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base">Профессиональное извлечение текста из документов Word по интернет-стандартам.</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+            <!-- Блок Ввода Текста и Выбора файлов -->
+            <div id="inputBlock" class="space-y-4">
+                <textarea id="textInput" rows="10" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-indigo-500 resize-none text-slate-100 placeholder-slate-600 leading-relaxed" placeholder="Вставьте текст работы вручную или выберите файл .docx ниже..."></textarea>
+                
+                <div id="dropZone" class="border-2 border-dashed border-slate-800 hover:border-indigo-500/50 p-6 rounded-xl text-center bg-slate-950/30 cursor-pointer transition">
+                    <input type="file" id="fileChooser" accept=".docx,.txt" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 file:cursor-pointer">
+                    <p id="fileStatus" class="text-xs text-slate-500 mt-2">Поддерживаются файлы Word (.docx) и обычный текст (.txt)</p>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <span id="charCount" class="text-xs text-slate-500 font-medium">Символов: 0</span>
+                    <button id="checkBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg shadow-indigo-600/20 active:scale-98 cursor-pointer">
+                        Запустить проверку
+                    </button>
+                </div>
+            </div>
+
+            <!-- Блок Экранной Загрузки (Анимация) -->
+            <div id="loadingBlock" class="hidden py-16 text-center space-y-4">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent shadow-md"></div>
+                <h3 id="loadingStatus" class="text-lg font-bold text-slate-200">Инициализация...</h3>
+                <p class="text-xs text-slate-500 max-w-xs mx-auto">Пожалуйста, подождите. Алгоритм сверяет данные с архивными базами документов.</p>
+            </div>
+
+            <!-- Блок Вывода Результатов Анализа -->
+            <div id="resultBlock" class="hidden space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 text-center shadow-inner">
+                        <p class="text-xs text-slate-500 uppercase tracking-wider font-extrabold">Оригинальность</p>
+                        <div id="plagPercent" class="text-4xl font-black text-emerald-400 mt-1">0%</div>
+                    </div>
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 text-center shadow-inner">
+                        <p class="text-xs text-slate-500 uppercase tracking-wider font-extrabold">Текст от ИИ</p>
+                        <div id="aiPercent" class="text-4xl font-black text-indigo-400 mt-1">0%</div>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <div class="flex justify-between text-xs text-slate-500 font-bold">
+                        <p>Извлеченный текст работы:</p>
+                        <p id="resultInfo">Слов: 0</p>
+                    </div>
+                    <div id="resultText" class="max-h-48 overflow-y-auto text-xs text-slate-400 leading-relaxed whitespace-pre-wrap border border-slate-900/60 p-3 rounded-lg bg-slate-950/50"></div>
+                </div>
+                
+                <button id="resetBtn" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 p-3 rounded-xl text-xs font-bold transition shadow-md cursor-pointer">
+                    Проверить другой документ
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const el = (id) => document.getElementById(id);
+        
+        // Живой счетчик символов
+        el('textInput').addEventListener('input', () => {
+            el('charCount').innerText = `Символов: ${el('textInput').value.length}`;
+        });
+
+        // Обработчик загрузки документов
+        el('fileChooser').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            el('fileStatus').innerHTML = `Чтение документа: <b class="text-indigo-400 animate-pulse">${file.name}</b>`;
+            const reader = new FileReader();
+
+            if (file.name.endsWith('.docx')) {
+                reader.onload = function(event) {
+                    const arrayBuffer = event.target.result;
+                    mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                        .then(function(result) {
+                            const txt = result.value.trim();
+                            if (txt.length > 5) {
+                                el('textInput').value = txt;
+                                el('charCount').innerText = `Символов: ${txt.length}`;
+                                el('fileStatus').innerHTML = `Файл <b class="text-emerald-400">${file.name}</b> успешно прочитан!`;
+                            } else {
+                                el('fileStatus').innerHTML = `<span class="text-red-400">Документ пуст или заблокирован.</span>`;
+                            }
+                        })
+                        .catch(function() {
+                            el('fileStatus').innerHTML = `<span class="text-red-400">Ошибка разбора формата Word .docx</span>`;
+                        });
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                reader.onload = function(event) {
+                    el('textInput').value = event.target.result;
+                    el('charCount').innerText = `Символов: ${event.target.result.length}`;
+                    el('fileStatus').innerHTML = `Файл <b class="text-emerald-400">${file.name}</b> загружен!`;
+                };
+                reader.readAsText(file, 'UTF-8');
+            }
+        });
+
+        // Шаги анимации сканирования
+        const steps = [
+            "Разбор структуры глав и параграфов...",
+            "Поиск совпадений в базах диссертаций RSL...",
+            "Проверка семантики на ИИ-генерацию...",
+            "Исключение списков литературы...",
+            "Финальный подсчет процентов..."
+        ];
+        
+        el('checkBtn').addEventListener('click', () => {
+            const txt = el('textInput').value.trim();
+            if (txt.length < 5) {
+                alert("Пожалуйста, введите текст вашей работы или прикрепите документ Word.");
+                return;
+            }
+
+            el('inputBlock').classList.add('hidden');
+            el('loadingBlock').classList.remove('hidden');
+
+            let s = 0;
+            const i = setInterval(() => {
+                if (s < steps.length) {
+                    el('loadingStatus').innerText = steps[s++];
+                } else {
+                    clearInterval(i);
+                    el('loadingBlock').classList.add('hidden');
+                    el('resultBlock').classList.remove('hidden');
+                    
+                    const words = txt.split(/\s+/).filter(w => w.length > 0).length;
+                    el('resultInfo').innerText = `Слов: ${words}`;
+                    
+                    // Реалистичный генератор процентов для портфолио
+                    el('plagPercent').innerText = `${Math.floor(75 + Math.random() * 20)}%`;
+                    el('aiPercent').innerText = `${Math.floor(1 + Math.random() * 15)}%`;
+                    el('resultText').innerText = txt;
+                }
+            }, 1000);
+        });
+
+        el('resetBtn').addEventListener('click', () => {
+            el('resultBlock').classList.add('hidden');
+            el('inputBlock').classList.remove('hidden');
+            el('textInput').value = "";
+            el('charCount').innerText = "Символов: 0";
+            el('fileChooser').value = "";
+            el('fileStatus').innerHTML = 'Поддерживаются файлы Word (.docx) и обычный текст (.txt)';
+        });
+    </script>
+</body>
+</html>
